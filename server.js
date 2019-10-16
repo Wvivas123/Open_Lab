@@ -2,6 +2,7 @@ const express = require("express");
 const app = express();
 const connectDB = require('./config/db')
 const user = require('./routes/api/users')
+
 const PORT = process.env.PORT || 5000
 
 //calling connection to database

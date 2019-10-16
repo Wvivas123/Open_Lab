@@ -1,10 +1,22 @@
 const express = require('express');
 const router = express.Router();
-//@route  Get api/usersProfile
-//@desc   Test route
-//@access Public Value 
+const auth = require('../../middleware/auth');
+const Profile = require('../../models/Profile');
+const User = require('../../models/User');
+//@route  Get api/profile/myprofile 
+//@desc   Get Current users Profile 
+//@access Private   
 
-router.get('/', (req, res) => res.send('Hello Cito you are on your Profile api'));
+router.get('/', auth, async (req, res) => {
+    try {
+        const profile = await Profile.findOne({user: req.user.id}).populate();
+
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).send('Server Error')
+
+    }
+});
 
 
 
