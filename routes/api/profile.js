@@ -73,8 +73,36 @@ router.post('/', [auth, [
     if (status) profileFields.status = status;
     if (githubusername) profileFields.githubusername = githubusername;
     if (skills) {
-        profileFields.skills = skills.split(',').map()
+        profileFields.skills = skills.split(',').map(skill => skill.trim());
     }
+    //build social object
+    profileFields.social = {}
+    if(youtube) profileFeilds.social.youtube = youtube;
+    if(twitter) profileFeilds.social.twitter = twitter;
+    if(youtube) profileFeilds.social.facebook = facebook;
+    if(youtube) profileFeilds.social.linkedin = linkedin;
+    if(youtube) profileFeilds.social.instagram = instagram;
+    
+    try{
+        let profile = await Profile.findOne({ user: req.user.id })
+        if(profile){
+            profile = await Profile.findOneAndUpdate(
+                {user: req.user.id},
+                {$set:
+            profileFeilds},
+            {new: true} );
+            return res.json(profile); 
+        }
+        //create
+        profile = new Profile(profileFields);
+        await profile.save();
+        res.json(profile);
+    }catch(err){
+        console.error(err)
+        res.status(500).send('server error')
+    }    
+
+    res.send('Hello');
 
 
 
