@@ -77,33 +77,77 @@ router.post('/', [auth, [
     }
     //build social object
     profileFields.social = {}
-    if(youtube) profileFeilds.social.youtube = youtube;
-    if(twitter) profileFeilds.social.twitter = twitter;
-    if(youtube) profileFeilds.social.facebook = facebook;
-    if(youtube) profileFeilds.social.linkedin = linkedin;
-    if(youtube) profileFeilds.social.instagram = instagram;
-    
-    try{
-        let profile = await Profile.findOne({ user: req.user.id })
-        if(profile){
-            profile = await Profile.findOneAndUpdate(
-                {user: req.user.id},
-                {$set:
-            profileFeilds},
-            {new: true} );
-            return res.json(profile); 
+    if (youtube) profileFeilds.social.youtube = youtube;
+    if (twitter) profileFeilds.social.twitter = twitter;
+    if (youtube) profileFeilds.social.facebook = facebook;
+    if (youtube) profileFeilds.social.linkedin = linkedin;
+    if (youtube) profileFeilds.social.instagram = instagram;
+
+    try {
+        let profile = await Profile.findOne({
+            user: req.user.id
+        })
+        if (profile) {
+            profile = await Profile.findOneAndUpdate({
+                user: req.user.id
+            }, {
+                $set: profileFeilds
+            }, {
+                new: true
+            });
+            return res.json(profile);
         }
         //create
         profile = new Profile(profileFields);
         await profile.save();
         res.json(profile);
-    }catch(err){
+    } catch (err) {
         console.error(err)
         res.status(500).send('server error')
-    }    
+    }
 
     res.send('Hello');
 
+
+
+});
+
+//@route  Get api/profile/
+//@desc   Get all profiles 
+//@acess  Public
+
+router.get('/', async (req, res) => {
+    try {
+        const profiles = await Profile.find().populate('user', ['name', 'avatar'])
+
+    } catch (err) {
+        console.error(err.message);
+        res.send(500).send('Server Error')
+
+    }
+
+
+});
+
+
+
+//@route  Get api/profile/user/user_id
+//@desc   Get profile by user_id  
+//@acess  Public
+
+router.get('/user/:user_id', async (req, res) => {
+    try {
+        const profile = await Profile.findOne({
+            user: req.params.user_id
+        }).populate('user', ['name', 'avatar'])
+        if (!profile) return res.status(400).json({
+            msg: 'There is no profile for this user'
+        })
+    } catch (err) {
+        console.error(err.message);
+        res.send(500).send('Server Error')
+
+    }
 
 
 });
